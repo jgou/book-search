@@ -1,0 +1,50 @@
+<div class="app">
+  <header class="header">
+    <h1 class="header__title">Book Search</h1>
+    <p class="header__subtitle">Search books by author via Open Library</p>
+  </header>
+
+  <main class="main">
+    <div class="search-bar">
+      <input
+        class="search-bar__input"
+        type="text"
+        placeholder="Enter author name…"
+        [value]="query()"
+        (input)="query.set($any($event.target).value)"
+        (keydown.enter)="search()"
+        [disabled]="loading()"
+        aria-label="Author name"
+      />
+      <button
+        class="search-bar__button"
+        (click)="search()"
+        [disabled]="loading() || !query().trim()"
+      >
+        {{ loading() ? 'Searching…' : 'Search' }}
+      </button>
+    </div>
+
+    @if (error()) {
+      <div class="error" role="alert">{{ error() }}</div>
+    }
+
+    @if (loading()) {
+      <div class="loading" aria-label="Loading">
+        <div class="spinner"></div>
+      </div>
+    }
+
+    @if (searched() && !loading() && !error()) {
+      @if (books().length === 0) {
+        <p class="no-results">No books found for "{{ query() }}".</p>
+      } @else {
+        <p class="results-count">
+          Showing <strong>{{ books().length }}</strong> of <strong>{{ total() }}</strong>
+          results for "<em>{{ query() }}</em>"
+        </p>
+        <app-book-list [books]="books()" />
+      }
+    }
+  </main>
+</div>

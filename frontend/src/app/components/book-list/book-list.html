@@ -1,0 +1,5 @@
+<div class="book-grid">
+  @for (book of books(); track book.key) {
+    <app-book-card [book]="book" />
+  }
+</div>

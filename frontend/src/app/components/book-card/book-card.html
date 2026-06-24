@@ -1,0 +1,20 @@
+<div class="card">
+  <div class="card__cover">
+    @if (book().cover_url) {
+      <img [src]="book().cover_url" [alt]="book().title" loading="lazy" />
+    } @else {
+      <div class="card__cover-placeholder">
+        <span>No Cover</span>
+      </div>
+    }
+  </div>
+  <div class="card__body">
+    <h3 class="card__title" [title]="book().title">{{ book().title }}</h3>
+    @if (book().author_names?.length) {
+      <p class="card__authors">{{ book().author_names.join(', ') }}</p>
+    }
+    @if (book().first_publish_year) {
+      <p class="card__year">{{ book().first_publish_year }}</p>
+    }
+  </div>
+</div>
