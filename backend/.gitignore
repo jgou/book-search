@@ -1,0 +1,23 @@
+# ── Build output ──────────────────────────────────────────────────────────────
+# Matches the binary produced by `go build` (directory name on Linux/macOS,
+# directory name + .exe on Windows)
+backend
+backend.exe
+
+# ── Test & coverage ───────────────────────────────────────────────────────────
+*.test
+*.test.exe
+coverage.out
+coverage.html
+
+# ── Go workspace local overrides ──────────────────────────────────────────────
+go.work
+go.work.sum
+
+# ── Vendor (if using `go mod vendor`) ─────────────────────────────────────────
+vendor/
+
+# ── Profiling ─────────────────────────────────────────────────────────────────
+*.prof
+cpu.prof
+mem.prof
