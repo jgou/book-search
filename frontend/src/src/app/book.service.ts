@@ -6,7 +6,7 @@ import { SearchResponse } from './models/book.model';
 @Injectable({ providedIn: 'root' })
 export class BookService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:8080/api';
+  private readonly apiUrl = '/api';
 
   searchByAuthor(author: string, limit = 20): Observable<SearchResponse> {
     const params = new HttpParams()
