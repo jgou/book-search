@@ -1,0 +1,71 @@
+name: Continuous Coding Agent (Gemini)
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  auto-code:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Notify start in the issue
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          gh issue comment $ISSUE_NUMBER --body "🤖 **AI Agent started:** I am analyzing the repository and preparing the changes to resolve this issue..."
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install @google/genai
+
+      - name: Run Agent with Gemini
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: node .github/scripts/ai-agent-gemini.js
+
+      - name: Push, Create Pull Request and Comment link
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          BRANCH_NAME="auto/issue-${{ github.event.issue.number }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Check if there are changes in the repository
+          if [ -n "$(git status --porcelain)" ]; then
+            git checkout -b $BRANCH_NAME
+            git add .
+            git commit -m "feat: automatic code resolution with Gemini for issue #${{ github.event.issue.number }}"
+            git push origin $BRANCH_NAME
+            
+            PR_URL=$(gh pr create \
+              --title "Fix/Feat: ${{ github.event.issue.title }}" \
+              --body "PR automatically generated using Gemini to resolve issue #${{ github.event.issue.number }}." \
+              --head $BRANCH_NAME \
+              --base main)
+            
+            gh issue comment $ISSUE_NUMBER --body "✅ **Pull Request created!** The proposed changes are ready for review here: $PR_URL"
+          else
+            echo "No changes were generated in the code."
+            gh issue comment $ISSUE_NUMBER --body "⚠️ **Attention:** The agent analyzed the request but did not generate any changes in the code."
+          fi
