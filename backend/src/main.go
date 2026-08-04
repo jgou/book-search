@@ -10,11 +10,14 @@ import (
 	"strconv"
 )
 
-const (
+var (
 	openLibraryBase = "https://openlibrary.org"
 	coverBase       = "https://covers.openlibrary.org/b/id"
-	defaultLimit    = 20
-	maxLimit        = 100
+)
+
+const (
+	defaultLimit = 20
+	maxLimit     = 100
 )
 
 type openLibDoc struct {
@@ -123,13 +126,17 @@ func searchBooksHandler(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, SearchResponse{Books: books, Total: olResp.NumFound})
 }
 
-func main() {
+func setupRouter() *http.ServeMux {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/api/books", cors(searchBooksHandler))
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusOK, map[string]string{"status": "ok"})
 	})
+	return mux
+}
 
+func main() {
+	mux := setupRouter()
 	log.Println("server listening on :8080")
 	if err := http.ListenAndServe(":8080", mux); err != nil {
 		log.Fatal(err)
