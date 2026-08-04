@@ -47,7 +47,7 @@ jobs:
 
       - name: Push, Create Pull Request and Comment link
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
           BRANCH_NAME="auto/issue-${{ github.event.issue.number }}"
