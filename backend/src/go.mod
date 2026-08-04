@@ -1,3 +1,3 @@
 module book-search/backend
 
-go 1.26.4
+go 1.24
