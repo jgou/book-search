@@ -2,7 +2,10 @@ name: Continuous Coding Agent (Gemini)
 
 on:
   issues:
-    types: [opened]
+    types: [
+      opened, 
+      reopened,
+    ]
 
 permissions:
   contents: write
