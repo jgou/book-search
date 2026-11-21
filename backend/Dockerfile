@@ -1,9 +1,9 @@
 FROM golang:1.26-alpine AS builder
 
 WORKDIR /app
-COPY src/go.mod ./
+COPY src/searcher/go.mod ./
 RUN go mod download
-COPY src/ ./
+COPY src/searcher/ ./
 
 # Build the Go application
 # CGO_ENABLED=0 ensures a statically linked binary, required for scratch/alpine
